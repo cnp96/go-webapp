@@ -1,0 +1,59 @@
+version: "3.9"
+services:
+  web:
+    build:
+      context: .
+      target: image-dev
+    restart: on-failure
+    ports:
+      - 9000:9000
+    volumes:
+      - ./:/app/go/
+    networks:
+      - mainnet
+    depends_on:
+      - redis_cache
+      - mongo_db
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+  redis_cache:
+    image: redis:6.2.6
+    hostname: redis_cache
+    restart: "no"
+    ports:
+      - 6385:6379
+    networks:
+      - mainnet
+  mongo_db:
+    image: mongo:4.4-rc-focal
+    restart: "no"
+    volumes:
+      - mongodata:/data/db/
+      - mongologs:/var/log/mongodb/
+    ports:
+      - 27018:27017
+    networks:
+      - mainnet
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=root
+      - MONGO_INITDB_ROOT_PASSWORD=password
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+volumes:
+  mongodata: null
+  mongologs: null
+networks:
+  mainnet: null

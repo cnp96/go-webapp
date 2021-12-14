@@ -1,0 +1,4 @@
+*.pem
+tmp/
+.env*
+go/
